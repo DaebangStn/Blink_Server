@@ -22,7 +22,7 @@ def update(request, up_mac):
     qs = Controller.objects.filter(mac=up_mac)
     if qs:
         req = json.loads(request.body)
-        up_speed = req['speed']
+        up_speed = req['speed_data']
         up_duty = req['duty']
         up_timestamp = req['timestamp']
         tz = datetime.timezone(datetime.timedelta(hours=9))
