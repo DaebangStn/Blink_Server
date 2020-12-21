@@ -1,13 +1,13 @@
 import datetime
+import json
 
 from motor.models import Controller, Data, Mode
 
 from django.http import HttpResponse
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
-
-def register(request):
-    req_mac = request.headers['mac']
+def register(request, req_mac):
     if Controller.objects.filter(mac=req_mac):
         print("Invalid Register %s" % req_mac)
         return HttpResponse("Invalid Register")
@@ -17,17 +17,17 @@ def register(request):
         print("%s registered" % req_mac)
         return HttpResponse("Registered")
 
-
-def update(request):
-    up_mac = request.headers['mac']
-    up_speed = request.headers['speed']
-    up_duty = request.headers['duty']
-    up_timestamp = request.headers['timestamp']
-    tz = datetime.timezone(datetime.timedelta(hours=9))
-    up_datetime = datetime.datetime.fromtimestamp(int(up_timestamp) // 1000, tz)
-
+@csrf_exempt
+def update(request, up_mac):
     qs = Controller.objects.filter(mac=up_mac)
     if qs:
+        req = json.loads(request.body)
+        up_speed = req['speed']
+        up_duty = req['duty']
+        up_timestamp = req['timestamp']
+        tz = datetime.timezone(datetime.timedelta(hours=9))
+        up_datetime = datetime.datetime.fromtimestamp(int(up_timestamp) // 1000, tz)
+
         controller = qs.get()
         controller.speed_data = up_speed
         controller.duty = up_duty
