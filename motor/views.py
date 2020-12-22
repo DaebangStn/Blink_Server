@@ -38,7 +38,7 @@ def update(request, up_mac):
         data.save()
 
         print("%s updated" % up_mac)
-        return HttpResponse("%d%d" % (controller.mode, controller.speed_target))
+        return HttpResponse("%d%d" % (controller.speed_target, controller.mode))
     else:
         print("Invalid Update %s" % up_mac)
         return HttpResponse("Invalid Update")
